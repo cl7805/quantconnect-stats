@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <div id="output"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+            document.getElementById('output').textContent = 'JavaScript is running. Time: ' + new Date().toLocaleString();
+            
+            fetch('https://api.github.com/users/github')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data received:', data);
+                    document.getElementById('output').textContent += '\n\nAPI Data: ' + JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('output').textContent += '\n\nError: ' + error.message;
+                });
+        });
+    </script>
+</body>
+</html>
