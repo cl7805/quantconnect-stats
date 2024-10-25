@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QuantConnect Live Stats</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+</head>
+<body>
+    <div id="stats"></div>
+    <script>
+        const userId = '236114';
+        const apiToken = 'da6a241d43a67c33e76059e177ae7f88c66811efe9ab143861695e571902326e';
+
+        function getAuthHeader() {
+            const timestamp = Math.floor(Date.now() / 1000).toString();
+            const message = `${apiToken}:${timestamp}`;
+            const hash = CryptoJS.HmacSHA256(message, apiToken.split(':')[1]);
+            return `${userId}:${hash.toString()}`;
+        }
+
+        async function fetchStats() {
+            const response = await fetch('https://www.quantconnect.com/api/v2/live/read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': getAuthHeader(),
+                    'Timestamp': Math.floor(Date.now() / 1000).toString()
+                },
+                body: JSON.stringify({ projectId: 'YOUR_PROJECT_ID' })
+            });
+            const data = await response.json();
+            document.getElementById('stats').innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        fetchStats();
+        setInterval(fetchStats, 60000); // Refresh every minute
+    </script>
+</body>
+</html>
