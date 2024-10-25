@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantConnect Stats</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+</head>
+<body>
+    <h1>QuantConnect Stats</h1>
+    <div id="output"></div>
+    <script>
+        const userId = '236114';
+        const apiToken = 'da6a241d43a67c33e76059e177ae7f88c66811efe9ab143861695e571902326e';
+
+        function getAuthHeader() {
+            const timestamp = Math.floor(Date.now() / 1000).toString();
+            const message = `${apiToken}:${timestamp}`;
+            const hash = CryptoJS.HmacSHA256(message, apiToken.split(':')[1]);
+            return `${userId}:${hash.toString()}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+            document.getElementById('output').textContent = 'Fetching QuantConnect data...';
+            
+            fetch('https://www.quantconnect.com/api/v2/live/read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': getAuthHeader(),
+                    'Timestamp': Math.floor(Date.now() / 1000).toString()
+                },
+                body: JSON.stringify({ projectId: '88JGI4UFWJK8J9HW' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('QuantConnect data received:', data);
+                document.getElementById('output').textContent = 'QuantConnect Data: ' + JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('output').textContent = 'Error fetching QuantConnect data: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
